@@ -1,6 +1,6 @@
-require "spec_helper"
+require "watirspec_helper"
 
-RSpec.describe Watigiri do
+describe Watigiri do
   it "does something useful" do
     expect(false).to eq(true)
   end
