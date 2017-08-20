@@ -4,6 +4,10 @@ module Watigiri
       class Locator < Watir::Locators::Element::Locator
 
         def locate
+          @nokogiri = @selector.delete(:nokogiri)
+          @nokogiri = true if @nokogiri.nil? && @selectors.values.any? { |e| e.is_a? Regexp }
+
+          return super unless @nokogiri
           @query_scope.browser.doc ||= Nokogiri::HTML(@query_scope.html).tap {|d| d.css('script').remove }
 
           reset_doc = ->(browser) { browser.doc = nil }
@@ -13,6 +17,7 @@ module Watigiri
         end
 
         def locate_element(how, what)
+          return super if @nokogiri.nil?
           case how
           when :css
             @query_scope.browser.doc.at_css(what)
@@ -22,6 +27,7 @@ module Watigiri
         end
 
         def locate_elements(how, what, _scope = nil)
+          return super if @nokogiri.nil?
           case how
           when :css
             @query_scope.browser.doc.css(what).to_a
@@ -31,11 +37,10 @@ module Watigiri
         end
 
         def fetch_value(element, how)
+          return super if @nokogiri.nil?
           case how
           when :text
-            ih = element.inner_html
-            it = element.inner_text
-            it
+            element.inner_text
           when :tag_name
             element.name.to_s.downcase
           when :href
