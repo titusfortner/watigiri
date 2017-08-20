@@ -1,0 +1,2 @@
+require "watigiri"
+require "watir"
