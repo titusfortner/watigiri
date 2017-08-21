@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
 By default Watir locates elements with Selenium; this gem will replace Selenium calls
 with Nokogiri calls where designated.
   DESCRIPTION_MESSAGE
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.homepage      = "http://github.com/titusfortner/watigiri"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
