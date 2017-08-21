@@ -15,27 +15,5 @@ module Watir
       text
     end
 
-    #
-    # Uses Nokogiri to return the attribute of the element.
-    #
-    # @return [String]
-    #
-
-    def attribute!
-      @selector[:nokogiri] = true
-      text
-    end
-
-    #
-    # Uses Nokogiri to return the value of the element.
-    #
-    # @return [String]
-    #
-
-    def value!
-      @selector[:nokogiri] = true
-      text
-    end
-
   end # Element
 end # Watir
