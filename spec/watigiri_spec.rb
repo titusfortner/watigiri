@@ -42,5 +42,15 @@ describe Watigiri do
       expect(navbar.li(id: "non_link_1").text!).to eq "Non-link 1"
     end
 
+    describe "#exists?" do
+      it "finds Watir::Element when selector uses regular expression" do
+        expect_any_instance_of(Selenium::WebDriver::Element).to_not receive(:attribute)
+
+        li = browser.li(id: /link/, index: 1)
+        expect(li).to exist
+        expect(li).to be_a(Watir::Element)
+      end
+    end
+
   end
 end
