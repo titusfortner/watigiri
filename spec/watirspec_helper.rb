@@ -1,5 +1,6 @@
 require 'watirspec'
-require "watigiri"
+require 'watigiri'
+require 'webdrivers'
 
 WatirSpec.implementation do |watirspec|
   opts = {}
