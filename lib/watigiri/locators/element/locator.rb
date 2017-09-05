@@ -20,6 +20,7 @@ module Watigiri
           @query_scope.browser.doc ||= Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
 
           element = find_first_by_multiple
+          return if element.nil?
           @nokogiri ? element.element : nokogiri_to_selenium(element)
         end
 
@@ -43,7 +44,7 @@ module Watigiri
 
         # "how" can only be :css or :xpath
         def locate_elements(how, what, _scope = @query_scope.wd)
-          return super unless @nokogiri || @regex
+          return super unless (@nokogiri || @regex) && @query_scope.is_a?(Watir::Browser)
 
           @query_scope.browser.doc.send(how, what).map do |el|
             Watigiri::Element.new element: el, selector: {how => what}
@@ -60,6 +61,7 @@ module Watigiri
 
         def filter_elements_by_regex(noko_elements, rx_selector, method)
           return if noko_elements.empty?
+          return super if noko_elements.first.is_a?(Selenium::WebDriver::Element)
 
           if @nokogiri || !@regex
             return noko_elements.__send__(method) { |el| matches_selector?(el.element, rx_selector) }
@@ -79,6 +81,7 @@ module Watigiri
 
         def fetch_value(element, how)
           return super unless @nokogiri || @regex
+          return super if element.is_a?(Selenium::WebDriver::Element)
           case how
           when :text
             element.inner_text
