@@ -59,6 +59,8 @@ module Watigiri
         end
 
         def filter_elements_by_regex(noko_elements, rx_selector, method)
+          return if noko_elements.empty?
+
           if @nokogiri || !@regex
             return noko_elements.__send__(method) { |el| matches_selector?(el.element, rx_selector) }
           end
