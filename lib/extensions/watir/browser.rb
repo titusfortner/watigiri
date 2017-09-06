@@ -9,8 +9,8 @@ module Watir
 
     def doc=(html)
       @doc = html
+      return if html.nil?
 
-      return if @doc.nil?
       reset_doc = ->(browser) { browser.doc = nil }
       after_hooks.add(reset_doc)
     end

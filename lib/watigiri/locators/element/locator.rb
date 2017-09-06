@@ -12,7 +12,7 @@ module Watigiri
     module LocatorHelpers
       def locate
         @nokogiri = @selector.delete(:nokogiri)
-        @regex = @selector.values.any? { |e| e.is_a? Regexp }
+        @regex = regex?
 
         return super unless @nokogiri || @regex
         @query_scope.browser.doc ||= Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
@@ -24,13 +24,13 @@ module Watigiri
 
       def locate_all
         @nokogiri = @selector.delete(:nokogiri)
-        @regex = @selector.values.any? { |e| e.is_a? Regexp }
+        @regex = regex?
 
-        # Don't want super because some subclasses don't want it
-        return find_all_by_multiple unless @nokogiri || @regex
+        return super unless @nokogiri || @regex
+        @query_scope.browser.doc ||= Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
 
-        elements = find_all_by_multiple.map(&:element)
-        @nokogiri ? elements : @elements.map { |element| nokogiri_to_watir element }
+        elements = find_all_by_multiple#.map(&:element)
+        @nokogiri ? elements : elements.map { |element| nokogiri_to_watir element }
       end
 
       # Is only used when there is no regex, index or visibility locators
@@ -52,6 +52,8 @@ module Watigiri
 
       def filter_elements noko_elements, visible, idx, number
         return super unless @nokogiri || @regex
+        return super if noko_elements.first.is_a?(Selenium::WebDriver::Element)
+
         unless visible.nil?
           noko_elements.select! { |el| visible == nokogiri_to_watir(el.element).visible? }
         end
@@ -74,7 +76,7 @@ module Watigiri
           end
         else
           index = noko_elements.find_index { |el| matches_selector?(el.element, rx_selector) }
-          selenium_elements[index]
+          index.nil? ? nil : selenium_elements[index]
         end
       end
 
@@ -94,6 +96,7 @@ module Watigiri
       end
 
       def nokogiri_to_watir(element)
+        return element if element.is_a?(Selenium::WebDriver::Element)
         se_element = nokogiri_to_selenium(element)
         tag = element.name
         Watir.element_class_for(tag).new(@query_scope, element: se_element)
@@ -104,6 +107,20 @@ module Watigiri
         tag = element.name
         index = @query_scope.browser.doc.xpath("//#{tag}").find_index { |el| el == element }
         Watir::Element.new(@query_scope, index: index, tag_name: tag).wd
+      end
+
+      def label_from_text(label_exp)
+        # TODO: this won't work correctly if @wd is a sub-element
+        elements = locate_elements(:xpath, '//label')
+        return super if elements.any? { |el| el.is_a? Selenium::WebDriver::Element }
+        element = elements.find do |el|
+          matches_selector?(el.element, text: label_exp)
+        end
+        element.nil? ? nil : element.element
+      end
+
+      def regex?
+        @selector.values.any? { |v| v.is_a?(Regexp) }
       end
     end
 
@@ -135,12 +152,38 @@ module Watigiri
     class TextArea
       class Locator < Watir::Locators::TextArea::Locator
         include LocatorHelpers
+
+        def regex?
+          @selector.any? { |k, v| v.is_a?(Regexp) && k != :value }
+        end
       end
     end
 
     class TextField
       class Locator < Watir::Locators::TextField::Locator
         include LocatorHelpers
+
+        def matches_selector?(element, rx_selector)
+          return super if element.is_a? Selenium::WebDriver::Element
+          rx_selector = rx_selector.dup
+
+          tag_name = element.name.downcase
+
+          [:text, :value, :label].each do |key|
+            if rx_selector.key?(key)
+              correct_key = tag_name == 'input' ? :value : :text
+              rx_selector[correct_key] = rx_selector.delete(key)
+            end
+          end
+
+          rx_selector.all? do |how, what|
+            what === fetch_value(element, how)
+          end
+        end
+
+        def regex?
+          @selector.any? { |k, v| v.is_a?(Regexp) && k != :value }
+        end
       end
     end
   end
