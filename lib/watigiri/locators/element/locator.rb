@@ -29,7 +29,7 @@ module Watigiri
         return super unless @nokogiri || @regex
         @query_scope.browser.doc ||= Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
 
-        elements = find_all_by_multiple#.map(&:element)
+        elements = find_all_by_multiple
         @nokogiri ? elements : elements.map { |element| nokogiri_to_watir element }
       end
 
