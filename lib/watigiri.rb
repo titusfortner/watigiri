@@ -7,12 +7,11 @@ require 'extensions/watir/iframe'
 
 require 'watigiri/locators/element/locator'
 require 'watigiri/locators/element/selector_builder'
-require 'watigiri/locators/element/validator'
 
 Watir.locator_namespace = Watigiri::Locators
 
-Watigiri::Locators::Button    = Watir::Locators::Button
-Watigiri::Locators::Cell      = Watir::Locators::Cell
-Watigiri::Locators::Row       = Watir::Locators::Row
-Watigiri::Locators::TextArea  = Watir::Locators::TextArea
-Watigiri::Locators::TextField = Watir::Locators::TextField
+# Use Watir Validator behaviors for all Elements
+Watigiri::Locators::Element::Validator = Watir::Locators::Element::Validator
+Watigiri::Locators::Button::Validator = Watir::Locators::Button::Validator
+Watigiri::Locators::TextField::Validator = Watir::Locators::TextField::Validator
+
