@@ -11,10 +11,14 @@ module Watir
       @doc = html
       return if html.nil?
 
-      reset_doc = ->(browser) { browser.doc = nil }
-      after_hooks.add(reset_doc)
+      @reset_doc_hook = ->(browser) { browser.reset_doc }
+      after_hooks.add(@reset_doc_hook)
     end
 
+    def reset_doc
+      @doc = nil
+      after_hooks.delete(@reset_doc_hook)
+    end
     #
     # Uses Nokogiri to return the text of page body.
     #
