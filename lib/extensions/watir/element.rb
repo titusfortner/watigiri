@@ -15,14 +15,5 @@ module Watir
       text
     end
 
-    def attribute!(attr)
-      @selector[:nokogiri] = true
-      attribute(attr).to_s
-    end
-
-    def value!
-      attribute!('value')
-    end
-
   end # Element
 end # Watir
