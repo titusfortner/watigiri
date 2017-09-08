@@ -1,8 +1,20 @@
 # Watigiri
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/watigiri`. To experiment with that code, run `bin/console` for an interactive prompt.
+Watigiri is an add-on to Watir that attempts to make it seamless for actions to be taken using Nokogiri 
+instead of Selenium in the places it makes sense to do so.
 
-TODO: Delete this and the text above, and describe your gem
+The advantage of Nokogiri is that it parses the DOM very quickly. This provides two primary opportunities for speeding
+ up Watir usage.
+ 
+1. Obtaining multiple successive pieces of information about elements from a static DOM. For instance, to verify 
+ that the text displayed on a page is the data that was previously entered into a form. Rather than making several
+ dozen wire calls to locate and obtain text information from each, you can make one wire call to obtain the DOM and then 
+ quickly locate and obtain all of the information necessary at each element location.
+  
+2. Iterating over a collection of elements. One of the times this happens is when locating elements using Regular
+Expressions. Watir implements this by locating a subset of elements that might match and then making wire calls
+on each to check if they actually match the provided regular expression. 
+If the number of elements to be checked is large, using Nokogiri can show a significant performance improvement.
 
 ## Installation
 
@@ -22,17 +34,20 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+First require it in your code:
+```ruby
+require 'watigiri'
+```
 
-## Development
+Once required, Watigiri will automatically speed up the location of elements using regular expression values.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To speed up the gathering of text values, use the text-bang method (`Element#text!` instead of `Element#text`).
+Watigiri flushes the cached DOM whenever a user takes an action that might have changed the DOM (clicks, navigations, etc).
+So the performance improvement will come with the number of successive calls of `#text!` before taking other actions. 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/watigiri.
+Bug reports and pull requests are welcome on GitHub at https://github.com/titusfortner/watigiri.
 
 ## License
 
