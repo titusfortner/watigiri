@@ -17,7 +17,7 @@ module Watigiri
         return super unless @nokogiri || @regex
         @query_scope.browser.doc ||= Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
 
-        element = find_first_by_multiple
+        element = using_watir(:first)
         return if element.nil?
         @nokogiri ? element.element : nokogiri_to_selenium(element)
       end
@@ -29,7 +29,7 @@ module Watigiri
         return super unless @nokogiri || @regex
         @query_scope.browser.doc ||= Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
 
-        elements = find_all_by_multiple
+        elements = using_watir(:all)
         @nokogiri ? elements : elements.map { |element| nokogiri_to_watir element }
       end
 
@@ -50,19 +50,20 @@ module Watigiri
         end
       end
 
-      def filter_elements noko_elements, visible, idx, number
+      def filter_elements_by_locator noko_elements, visible = nil, visible_text = nil, idx = nil, tag_name: nil, filter: :first
         return super unless @nokogiri || @regex
         return super if noko_elements.first.is_a?(Selenium::WebDriver::Element)
 
         unless visible.nil?
           noko_elements.select! { |el| visible == nokogiri_to_watir(el.element).visible? }
         end
-        number == :single ? noko_elements[idx || 0] : noko_elements
+        filter == :first ? noko_elements[idx || 0] : noko_elements
       end
 
-      def filter_elements_by_regex(noko_elements, rx_selector, method)
+      def filter_elements_by_regex(noko_elements, rx_selector, filter)
         return if noko_elements.empty?
         return super if noko_elements.first.is_a?(Selenium::WebDriver::Element)
+        method = filter == :first ? :find : :select
 
         if @nokogiri || !@regex
           return noko_elements.__send__(method) { |el| matches_selector?(el.element, rx_selector) }
