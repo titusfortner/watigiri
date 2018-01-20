@@ -31,7 +31,7 @@ module Watir
 
     def text!
       @selector[:nokogiri] = true
-      text
+      text.strip
     end
 
     alias_method :el_stale?, :stale?
