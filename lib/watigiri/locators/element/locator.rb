@@ -15,7 +15,8 @@ module Watigiri
         @regex = regex?
 
         return super unless @nokogiri || @regex
-        @query_scope.browser.doc ||= Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
+        command = @query_scope.is_a?(Watir::Browser) ? :html : :inner_html
+        @query_scope.doc ||= Nokogiri::HTML(@query_scope.send(command)).tap { |d| d.css('script').remove }
 
         element = using_watir(:first)
         return if element.nil?
@@ -27,7 +28,7 @@ module Watigiri
         @regex = regex?
 
         return super unless @nokogiri || @regex
-        @query_scope.browser.doc ||= Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
+        @query_scope.doc ||= Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
 
         elements = using_watir(:all)
         @nokogiri ? elements : elements.map { |element| nokogiri_to_watir element }
@@ -37,15 +38,15 @@ module Watigiri
       def locate_element(how, what)
         return super unless @nokogiri
 
-        el = @query_scope.browser.doc.send("at_#{how}", what)
+        el = @query_scope.doc.send("at_#{how}", what)
         Watigiri::Element.new element: el, selector: {how => what}
       end
 
       # "how" can only be :css or :xpath
       def locate_elements(how, what, _scope = @query_scope.wd)
-        return super unless (@nokogiri || @regex) && @query_scope.is_a?(Watir::Browser)
+        return super unless @nokogiri || @regex
 
-        @query_scope.browser.doc.send(how, what).map do |el|
+        @query_scope.doc.send(how, what).map do |el|
           Watigiri::Element.new element: el, selector: {how => what}
         end
       end
@@ -106,7 +107,7 @@ module Watigiri
       def nokogiri_to_selenium(element)
         return element if element.is_a?(Selenium::WebDriver::Element)
         tag = element.name
-        index = @query_scope.browser.doc.xpath("//#{tag}").find_index { |el| el == element }
+        index = @query_scope.doc.xpath("//#{tag}").find_index { |el| el == element }
         Watir::Element.new(@query_scope, index: index, tag_name: tag).wd
       end
 

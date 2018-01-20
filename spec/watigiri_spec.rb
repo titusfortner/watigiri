@@ -9,7 +9,6 @@ describe Watigiri do
     end
 
     it "locates with page_source driver call" do
-      expect(browser.driver).to receive(:page_source).once.and_return(browser.driver.page_source)
       expect(browser.driver).to_not receive(:find_element)
 
       expect(browser.li(id: "non_link_1").text!).to eq 'Non-link 1'
@@ -23,6 +22,23 @@ describe Watigiri do
       expect(browser.li(id: /non_link/, index: 1).text!).to eq 'Non-link 2'
       expect(browser.li(xpath: "//li[@id='non_link_1']").text!).to eq 'Non-link 1'
       expect(browser.li(css: "li#non_link_1").text!).to eq 'Non-link 1'
+    end
+
+    it "locates with inner html driver call" do
+      div = browser.div(id: 'header')
+      div.exist?
+      expect(browser.driver).to_not receive(:find_element)
+      expect(div.li(id: "non_link_1").text!).to eq 'Non-link 1'
+      expect(div.li(id: /non_link_1/).text!).to eq 'Non-link 1'
+      expect(div.li(title: "This is not a link!").text!).to eq 'Non-link 1'
+      expect(div.li(title: /This is not a link!/).text!).to eq 'Non-link 1'
+      expect(div.li(text: "Non-link 1").text!).to eq 'Non-link 1'
+      expect(div.li(text: /Non-link 1/).text!).to eq 'Non-link 1'
+      expect(div.li(class: "nonlink").text!).to eq 'Non-link 1'
+      expect(div.li(class: /nonlink/).text!).to eq 'Non-link 1'
+      expect(div.li(id: /non_link/, index: 1).text!).to eq 'Non-link 2'
+      expect(div.li(xpath: "//li[@id='non_link_1']").text!).to eq 'Non-link 1'
+      expect(div.li(css: "li#non_link_1").text!).to eq 'Non-link 1'
     end
 
     it "reloads the cached document from after hooks" do
