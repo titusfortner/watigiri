@@ -10,6 +10,7 @@ describe Watigiri do
 
     it "locates with page_source driver call" do
       expect(browser.driver).to_not receive(:find_element)
+      expect(browser.driver).to_not receive(:find_elements)
 
       expect(browser.li(id: "non_link_1").text!).to eq 'Non-link 1'
       expect(browser.li(id: /non_link_1/).text!).to eq 'Non-link 1'
@@ -28,6 +29,8 @@ describe Watigiri do
       div = browser.div(id: 'header')
       div.exist?
       expect(browser.driver).to_not receive(:find_element)
+      expect(browser.driver).to_not receive(:find_elements)
+
       expect(div.li(id: "non_link_1").text!).to eq 'Non-link 1'
       expect(div.li(id: /non_link_1/).text!).to eq 'Non-link 1'
       expect(div.li(title: "This is not a link!").text!).to eq 'Non-link 1'
@@ -55,6 +58,7 @@ describe Watigiri do
     it "locates by sub-element" do
       navbar = browser.ul(id: 'navbar').tap { |el| el.exist? }
       expect(browser.driver).to_not receive(:find_element)
+      expect(browser.driver).to_not receive(:find_elements)
       expect(navbar.li(id: "non_link_1").text!).to eq "Non-link 1"
     end
 
