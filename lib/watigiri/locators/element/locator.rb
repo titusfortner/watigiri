@@ -71,6 +71,7 @@ module Watigiri
       end
 
       def regex?
+        return false unless (@selector.keys & %i[adjacent visible label text visible_text]).empty?
         @selector.values.any? { |v| v.is_a?(Regexp) }
       end
     end
@@ -105,6 +106,7 @@ module Watigiri
         include LocatorHelpers
 
         def regex?
+          return false unless (@selector.keys & %i[adjacent visible label text visible_text]).empty?
           @selector.any? { |k, v| v.is_a?(Regexp) && k != :value }
         end
       end
@@ -133,6 +135,7 @@ module Watigiri
         end
 
         def regex?
+          return false unless (@selector.keys & %i[adjacent visible label text visible_text]).empty?
           @selector.any? { |k, v| v.is_a?(Regexp) && k != :value }
         end
       end
