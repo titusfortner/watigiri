@@ -19,8 +19,11 @@ module Watigiri
         @regex = regex?
 
         return super unless @nokogiri || @regex
-        command = @query_scope.is_a?(Watir::Browser) ? :html : :inner_html
-        @query_scope.doc ||= Nokogiri::HTML(@query_scope.send(command)).tap { |d| d.css('script').remove }
+        @query_scope.doc ||= if @query_scope.is_a?(Watir::Browser)
+                               Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
+                             else
+                               Nokogiri::HTML.fragment(@query_scope.inner_html)
+                             end
 
         element = using_watir(:first)
         return if element.nil?
