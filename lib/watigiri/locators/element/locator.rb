@@ -8,7 +8,7 @@ module Watigiri
     end
 
     def tag_name
-      element.name
+      element.name.downcase
     end
   end
 
@@ -120,7 +120,7 @@ module Watigiri
           return super if element.is_a? Selenium::WebDriver::Element
           rx_selector = rx_selector.dup
 
-          tag_name = element.name.downcase
+          tag_name = element.tag_name
 
           [:text, :value, :label].each do |key|
             if rx_selector.key?(key)
