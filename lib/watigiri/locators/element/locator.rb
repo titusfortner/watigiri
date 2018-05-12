@@ -66,7 +66,7 @@ module Watigiri
       def nokogiri_to_selenium(element)
         return element if element.is_a?(Selenium::WebDriver::Element)
         tag = element.tag_name
-        index = @query_scope.doc.xpath("//#{tag}").find_index { |el| el == element.element }
+        index = @query_scope.doc.xpath(".//#{tag}").find_index { |el| el == element.element }
         Watir::Element.new(@query_scope, index: index, tag_name: tag).wd
       end
 
