@@ -22,7 +22,9 @@ module Watigiri
         @query_scope.doc ||= if @query_scope.is_a?(Watir::Browser)
                                Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
                              else
-                               Nokogiri::HTML.fragment(@query_scope.inner_html)
+                               # This should be using `#fragment`, but can't because of
+                               # https://github.com/sparklemotion/nokogiri/issues/572
+                               Nokogiri::HTML(@query_scope.inner_html)
                              end
 
         element = using_watir(:first)
@@ -92,12 +94,22 @@ module Watigiri
     class Cell
       class Locator < Watir::Locators::Cell::Locator
         include LocatorHelpers
+
+        # Don't use for rows
+        def regex?
+          false
+        end
       end
     end
 
     class Row
       class Locator < Watir::Locators::Row::Locator
         include LocatorHelpers
+
+        # Don't use for rows
+        def regex?
+          false
+        end
       end
     end
 

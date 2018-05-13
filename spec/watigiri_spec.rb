@@ -16,8 +16,6 @@ describe Watigiri do
       expect(browser.li(id: /non_link_1/).text!).to eq 'Non-link 1'
       expect(browser.li(title: "This is not a link!").text!).to eq 'Non-link 1'
       expect(browser.li(title: /This is not a link!/).text!).to eq 'Non-link 1'
-      expect(browser.li(text: "Non-link 1").text!).to eq 'Non-link 1'
-      expect(browser.li(text: /Non-link 1/).text!).to eq 'Non-link 1'
       expect(browser.li(class: "nonlink").text!).to eq 'Non-link 1'
       expect(browser.li(class: /nonlink/).text!).to eq 'Non-link 1'
       expect(browser.li(id: /non_link/, index: 1).text!).to eq 'Non-link 2'
@@ -26,8 +24,7 @@ describe Watigiri do
     end
 
     it "locates with inner html driver call" do
-      div = browser.div(id: 'header')
-      div.exist?
+      div = browser.div(id: 'header').tap(&:exist?)
       expect(browser.driver).to_not receive(:find_element)
       expect(browser.driver).to_not receive(:find_elements)
 
@@ -35,8 +32,6 @@ describe Watigiri do
       expect(div.li(id: /non_link_1/).text!).to eq 'Non-link 1'
       expect(div.li(title: "This is not a link!").text!).to eq 'Non-link 1'
       expect(div.li(title: /This is not a link!/).text!).to eq 'Non-link 1'
-      expect(div.li(text: "Non-link 1").text!).to eq 'Non-link 1'
-      expect(div.li(text: /Non-link 1/).text!).to eq 'Non-link 1'
       expect(div.li(class: "nonlink").text!).to eq 'Non-link 1'
       expect(div.li(class: /nonlink/).text!).to eq 'Non-link 1'
       expect(div.li(id: /non_link/, index: 1).text!).to eq 'Non-link 2'
@@ -56,7 +51,7 @@ describe Watigiri do
     end
 
     it "locates by sub-element" do
-      navbar = browser.ul(id: 'navbar').tap { |el| el.exist? }
+      navbar = browser.ul(id: 'navbar').tap(&:exist?)
       expect(browser.driver).to_not receive(:find_element)
       expect(browser.driver).to_not receive(:find_elements)
       expect(navbar.li(id: "non_link_1").text!).to eq "Non-link 1"
