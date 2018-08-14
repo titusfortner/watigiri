@@ -26,7 +26,8 @@ with Nokogiri calls where designated.
   spec.add_development_dependency "bundler", "~> 1.15"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "webdrivers", "~> 3.0"
+  spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'webdrivers', '~> 3.3', '>= 3.3.3'
 
   spec.add_runtime_dependency "watir", "~> 6.12"
   spec.add_runtime_dependency "nokogiri"
