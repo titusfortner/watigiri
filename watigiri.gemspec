@@ -28,6 +28,6 @@ with Nokogiri calls where designated.
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "webdrivers", "~> 3.0"
 
-  spec.add_runtime_dependency "watir", "~> 6.10"
+  spec.add_runtime_dependency "watir", "~> 6.12"
   spec.add_runtime_dependency "nokogiri"
 end

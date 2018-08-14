@@ -30,5 +30,9 @@ module Watir
       body.text!
     end
 
+    def locator_namespace
+      @locator_namespace ||= Watigiri::Locators
+    end
+
   end # Browser
 end # Watir
