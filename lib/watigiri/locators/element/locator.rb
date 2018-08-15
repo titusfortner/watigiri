@@ -62,7 +62,7 @@ module Watigiri
         when :tag_name
           noko_element.name.downcase
         else
-          noko_element.attribute(how.to_s.tr('_', '-')).strip
+          noko_element.attribute(how.to_s.tr('_', '-')).to_s.strip
         end
       end
 
