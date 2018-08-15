@@ -35,7 +35,6 @@ module Watigiri
         @nokogiri ? elements.map(&:element) : elements.map { |el| nokogiri_to_selenium(el) }
       end
 
-
       # Is only used when there is no regex, index or visibility locators
       def locate_element(how, what, _driver_scope = @query_scope.wd)
         return super unless @nokogiri
@@ -61,11 +60,9 @@ module Watigiri
         when :text
           noko_element.inner_text
         when :tag_name
-          noko_element.name.to_s.downcase
-        when :href
-          noko_element.attribute('href')&.to_s.strip
+          noko_element.name.downcase
         else
-          noko_element.attribute(how.to_s.tr('_', '-')).to_s.strip
+          noko_element.attribute(how.to_s.tr('_', '-')).strip
         end
       end
 
