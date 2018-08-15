@@ -18,16 +18,23 @@ module Watigiri
         @nokogiri = @selector.delete(:nokogiri)
         return super unless @nokogiri || regex?
 
-        # :inner_html should be using `#fragment`, but can't because of
-        # https://github.com/sparklemotion/nokogiri/issues/572
-        method = @query_scope.is_a?(Watir::Browser) ? :html : :inner_html
-
-        @query_scope.doc ||= Nokogiri::HTML(@query_scope.send(method)).tap { |d| d.css('script').remove }
+        set_nokogiri
 
         element = using_watir(:first)
         return if element.nil?
         @nokogiri ? element.element : nokogiri_to_selenium(element)
       end
+
+      def locate_all
+        @nokogiri = @selector.delete(:nokogiri)
+        return super unless @nokogiri || regex?
+
+        set_nokogiri
+
+        elements = using_watir(:all)
+        @nokogiri ? elements.map(&:element) : elements.map { |el| nokogiri_to_selenium(el) }
+      end
+
 
       # Is only used when there is no regex, index or visibility locators
       def locate_element(how, what, _driver_scope = @query_scope.wd)
@@ -47,18 +54,18 @@ module Watigiri
       end
 
       def fetch_value(element, how)
-        element = update_element(element)
-        return if element.nil?
+        noko_element = noko_element(element)
+        return super if noko_element.nil?
 
         case how
         when :text
-          element.inner_text
+          noko_element.inner_text
         when :tag_name
-          element.name.to_s.downcase
+          noko_element.name.to_s.downcase
         when :href
-          element.attribute('href')&.to_s
+          noko_element.attribute('href')&.to_s.strip
         else
-          element.attribute(how.to_s.tr('_', '-')).to_s
+          noko_element.attribute(how.to_s.tr('_', '-')).to_s.strip
         end
       end
 
@@ -71,11 +78,12 @@ module Watigiri
 
       def regex?
         return @regex unless @regex.nil?
-        return false unless (@selector.keys & %i[adjacent visible label text visible_text]).empty?
+
+        return false unless (@selector.keys & %i[adjacent visible label text visible_text visible_label]).empty?
         @regex = @selector.values.any? { |v| v.is_a?(Regexp) }
       end
 
-      def update_element(element)
+      def noko_element(element)
         if !(@nokogiri || regex?) || element.is_a?(Selenium::WebDriver::Element)
           nil
         elsif element.is_a?(Watigiri::Element)
@@ -83,6 +91,24 @@ module Watigiri
         else
           element
         end
+      end
+
+      def set_nokogiri
+        return if @query_scope.doc
+
+        # should be using `#fragment` instead of `#inner_html`, but can't because of
+        # https://github.com/sparklemotion/nokogiri/issues/572
+        doc = if @query_scope.is_a?(Watir::Browser)
+                Nokogiri::HTML(@query_scope.html)
+              else
+                Nokogiri::HTML(@query_scope.inner_html)
+              end
+
+        @query_scope.doc = doc.tap { |d| d.css('script').remove }
+      end
+
+      def text_regexp_deprecation(*)
+        # Nokogiri can not determine visible text so no need to check
       end
     end
 
@@ -125,8 +151,10 @@ module Watigiri
         include LocatorHelpers
 
         def regex?
-          return false unless (@selector.keys & %i[adjacent visible label text visible_text]).empty?
-          @selector.any? { |k, v| v.is_a?(Regexp) && k != :value }
+          return @regex unless @regex.nil?
+
+          return false unless (@selector.keys & %i[adjacent visible label text visible_text visible_label]).empty?
+          @regex = @selector.any? { |k, v| v.is_a?(Regexp) && k != :value }
         end
       end
     end
@@ -154,8 +182,10 @@ module Watigiri
         end
 
         def regex?
-          return false unless (@selector.keys & %i[adjacent visible label text visible_text]).empty?
-          @selector.any? { |k, v| v.is_a?(Regexp) && k != :value }
+          return @regex unless @regex.nil?
+
+          return false unless (@selector.keys & %i[adjacent visible label text visible_text visible_label]).empty?
+          @regex = @selector.any? { |k, v| v.is_a?(Regexp) && k != :value }
         end
       end
     end
