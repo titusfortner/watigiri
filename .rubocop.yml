@@ -1,3 +1,6 @@
+AllCops:
+  TargetRubyVersion: 2.3.7
+
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: when_needed, always, never
