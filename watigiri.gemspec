@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'watigiri'
-  spec.version       = '0.4.0'
+  spec.version       = '0.5.0'
   spec.authors       = ['Titus Fortner']
   spec.email         = ['titusfortner@gmail.com']
 
