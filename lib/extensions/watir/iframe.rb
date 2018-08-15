@@ -12,15 +12,12 @@ module Watir
   end
 
   class FramedDriver
-
     private
 
-    alias_method :watir_switch!, :switch!
+    alias watir_switch! switch!
     def switch!
       @browser.doc = nil
       watir_switch!
     end
-
   end # FramedDriver
-
 end # Watir

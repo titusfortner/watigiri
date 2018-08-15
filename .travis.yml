@@ -1,8 +1,13 @@
 sudo: false
 language: ruby
 rvm:
-  - 2.4.1
+  - 2.3.7
 before_install:
   - export DISPLAY=:99
   - sh -e /etc/init.d/xvfb start
   - export PATH=~/.webdrivers:$PATH
+script: bundle exec rake $RAKE_TASK
+env:
+  - RAKE_TASK=spec
+  - RAKE_TASK=watirspec:run
+  - RAKE_TASK=rubocop

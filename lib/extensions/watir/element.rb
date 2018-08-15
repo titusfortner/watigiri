@@ -1,7 +1,5 @@
 module Watir
-
   class Element
-
     attr_reader :doc
 
     #
@@ -34,10 +32,9 @@ module Watir
       text.strip
     end
 
-    alias_method :el_stale?, :stale?
+    alias el_stale? stale?
     def stale?
       @doc.nil? && el_stale?
     end
-
   end # Element
 end # Watir

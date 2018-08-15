@@ -1,5 +1,4 @@
 module Watir
-
   class Browser
     attr_reader :doc
 
@@ -33,6 +32,5 @@ module Watir
     def locator_namespace
       @locator_namespace ||= Watigiri::Locators
     end
-
   end # Browser
 end # Watir

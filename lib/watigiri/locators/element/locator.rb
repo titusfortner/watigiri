@@ -16,16 +16,13 @@ module Watigiri
     module LocatorHelpers
       def locate
         @nokogiri = @selector.delete(:nokogiri)
-        @regex = regex?
+        return super unless @nokogiri || regex?
 
-        return super unless @nokogiri || @regex
-        @query_scope.doc ||= if @query_scope.is_a?(Watir::Browser)
-                               Nokogiri::HTML(@query_scope.html).tap { |d| d.css('script').remove }
-                             else
-                               # This should be using `#fragment`, but can't because of
-                               # https://github.com/sparklemotion/nokogiri/issues/572
-                               Nokogiri::HTML(@query_scope.inner_html)
-                             end
+        # :inner_html should be using `#fragment`, but can't because of
+        # https://github.com/sparklemotion/nokogiri/issues/572
+        method = @query_scope.is_a?(Watir::Browser) ? :html : :inner_html
+
+        @query_scope.doc ||= Nokogiri::HTML(@query_scope.send(method)).tap { |d| d.css('script').remove }
 
         element = using_watir(:first)
         return if element.nil?
@@ -42,7 +39,7 @@ module Watigiri
 
       # "how" can only be :css or :xpath
       def locate_elements(how, what, _scope = @query_scope.wd)
-        return super unless @nokogiri || @regex
+        return super unless @nokogiri || regex?
 
         @query_scope.doc.send(how, what).map do |el|
           Watigiri::Element.new element: el, selector: {how => what}
@@ -50,18 +47,18 @@ module Watigiri
       end
 
       def fetch_value(element, how)
-        return super unless @nokogiri || @regex
-        return super if element.is_a?(Selenium::WebDriver::Element)
-        element = element.element if element.is_a?(Watigiri::Element)
+        element = update_element(element)
+        return if element.nil?
+
         case how
         when :text
           element.inner_text
         when :tag_name
           element.name.to_s.downcase
         when :href
-          (href = element.attribute('href')) && href.to_s.strip
+          element.attribute('href')&.to_s
         else
-          element.attribute(how.to_s.tr("_", "-")).to_s
+          element.attribute(how.to_s.tr('_', '-')).to_s
         end
       end
 
@@ -73,11 +70,21 @@ module Watigiri
       end
 
       def regex?
+        return @regex unless @regex.nil?
         return false unless (@selector.keys & %i[adjacent visible label text visible_text]).empty?
-        @selector.values.any? { |v| v.is_a?(Regexp) }
+        @regex = @selector.values.any? { |v| v.is_a?(Regexp) }
+      end
+
+      def update_element(element)
+        if !(@nokogiri || regex?) || element.is_a?(Selenium::WebDriver::Element)
+          nil
+        elsif element.is_a?(Watigiri::Element)
+          element.element
+        else
+          element
+        end
       end
     end
-
 
     class Element
       class Locator < Watir::Locators::Element::Locator
@@ -134,15 +141,15 @@ module Watigiri
 
           tag_name = element.tag_name
 
-          [:text, :value, :label].each do |key|
-            if rx_selector.key?(key)
-              correct_key = tag_name == 'input' ? :value : :text
-              rx_selector[correct_key] = rx_selector.delete(key)
-            end
+          %i[text value label].each do |key|
+            next unless rx_selector.key?(key)
+            correct_key = tag_name == 'input' ? :value : :text
+            rx_selector[correct_key] = rx_selector.delete(key)
           end
 
           rx_selector.all? do |how, what|
-            what === fetch_value(element, how)
+            val = fetch_value(element, how)
+            what == val || val =~ /#{what}/
           end
         end
 
