@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 language: ruby
 rvm:
   - 2.3.7
@@ -11,3 +11,5 @@ env:
   - RAKE_TASK=spec
   - RAKE_TASK=watirspec:run
   - RAKE_TASK=rubocop
+addons:
+  chrome: stable
