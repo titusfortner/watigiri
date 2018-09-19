@@ -12,8 +12,6 @@ module Watir
   end
 
   class FramedDriver
-    private
-
     alias watir_switch! switch!
     def switch!
       @browser.doc = nil
