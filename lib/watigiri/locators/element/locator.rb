@@ -144,7 +144,7 @@ module Watigiri
     end
 
     class TextArea
-      class Locator < Watir::Locators::TextArea::Locator
+      class Locator
         include LocatorHelpers
 
         def regex?
