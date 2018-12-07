@@ -23,6 +23,8 @@ module Watigiri
         element = using_watir(:first)
         return if element.nil?
         @nokogiri ? element.element : nokogiri_to_selenium(element)
+      rescue Selenium::WebDriver::Error::NoSuchElementError, Selenium::WebDriver::Error::StaleElementReferenceError
+        nil
       end
 
       def locate_all
@@ -144,7 +146,7 @@ module Watigiri
     end
 
     class TextArea
-      class Locator < Watir::Locators::TextArea::Locator
+      class Locator < Watir::Locators::Element::Locator
         include LocatorHelpers
 
         def regex?

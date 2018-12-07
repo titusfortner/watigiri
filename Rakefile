@@ -6,6 +6,7 @@ RSpec::Core::RakeTask.new(:spec)
 require 'watirspec/rake_tasks'
 WatirSpec::RakeTasks.new
 
+desc 'Run specs and watirspecs'
 task default: %i[spec watirspec:run]
 
 require 'rubocop/rake_task'
