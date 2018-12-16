@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'watigiri'
-  spec.version       = '0.6.2'
+  spec.version       = '0.6.3'
   spec.authors       = ['Titus Fortner']
   spec.email         = ['titusfortner@gmail.com']
 
@@ -29,5 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'webdrivers', '~> 3.3', '>= 3.3.3'
 
   spec.add_runtime_dependency 'nokogiri'
-  spec.add_runtime_dependency 'watir', '~> 6.15'
+  spec.add_runtime_dependency 'watir', '~> 6.15', '< 6.16'
 end
