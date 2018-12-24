@@ -16,24 +16,19 @@ module Watigiri
       @browser
     end
 
-    def doc
-      doc = instance_double Nokogiri::HTML::Document
-      allow(doc).to receive(:at_xpath).with(@xpath).and_return(element)
-      doc
-    end
-
     def se_element
-      @se_element ||= instance_double Selenium::WebDriver::Element
-      allow(@se_element).to receive(:displayed?).and_return(true)
-      allow(@se_element).to receive(:is_a?).with(Selenium::WebDriver::Element).and_return(true)
-      @se_element
+      element = instance_double Selenium::WebDriver::Element
+      allow(element).to receive(:displayed?).and_return(true)
+      allow(element).to receive(:is_a?).with(Selenium::WebDriver::Element).and_return(true)
+      element
     end
 
     def watir_element
-      watir_element = instance_double(Watir::HTMLElement)
-      expect(watir_element).to receive(:doc).and_return(nil, doc)
-      expect(watir_element).to receive(:doc=).with(instance_of(Nokogiri::HTML::Document))
-      watir_element
+      element = instance_double(Watir::HTMLElement)
+      allow(element).to receive(:wd).and_return(se_element)
+      allow(element).to receive(:doc).and_return(nil, doc)
+      allow(element).to receive(:doc=).with(instance_of(Nokogiri::HTML::Document))
+      element
     end
   end
 end

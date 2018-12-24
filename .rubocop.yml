@@ -31,3 +31,6 @@ Metrics/BlockLength:
 Metrics/AbcSize:
   Exclude:
     - 'spec/locator_spec_helper.rb'
+
+Metrics/MethodLength:
+  Max: 11
