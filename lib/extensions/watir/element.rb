@@ -10,7 +10,7 @@ module Watir
       @doc = html
       return if html.nil?
 
-      @reset_doc_hook = ->(element) { element.reset_doc }
+      @reset_doc_hook = ->(*) { reset_doc }
       browser.after_hooks.add(@reset_doc_hook)
     end
 
@@ -20,15 +20,13 @@ module Watir
     end
 
     #
-    # TODO - reimplement with Watir Executor when available
-    #
     # Uses Nokogiri to return the text of the element.
     #
     # @return [String]
     #
 
     def text!
-      @selector[:nokogiri] = true
+      selector_builder.built[:nokogiri] = true
       text.strip
     end
 

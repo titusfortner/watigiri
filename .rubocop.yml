@@ -1,39 +1,33 @@
 AllCops:
-  TargetRubyVersion: 2.3.7
+  TargetRubyVersion: 2.3.8
 
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: when_needed, always, never
+#
+# Default Preferences
+#
+
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces.
-# SupportedStyles: space, no_space, compact
-# SupportedStylesForEmptyBraces: space, no_space
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
 Style/CommentedKeyword:
   Enabled: false
 
-# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
-# URISchemes: http, https
 Metrics/LineLength:
   Max: 120
-
-# Configuration parameters: CountComments, ExcludedMethods.
-# ExcludedMethods: refine
-Metrics/BlockLength:
-  Exclude:
-    - 'spec/**/*'
 
 Style/Documentation:
   Enabled: false
 
-# Configuration parameters: CountComments.
-Metrics/MethodLength:
-  Max: 13
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
 
-Metrics/CyclomaticComplexity:
-  Max: 10
+#
+# Adjustable Parameters
+#
+
+Metrics/AbcSize:
+  Exclude:
+    - 'spec/locator_spec_helper.rb'

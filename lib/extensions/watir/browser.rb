@@ -19,16 +19,6 @@ module Watir
       after_hooks.delete(@reset_doc_hook)
     end
 
-    #
-    # Uses Nokogiri to return the text of page body.
-    #
-    # @return [String]
-    #
-
-    def text!
-      body.text!
-    end
-
     def locator_namespace
       @locator_namespace ||= Watigiri::Locators
     end
